@@ -1,5 +1,4 @@
 *.pdf
 venv/
-AlphaCap.zip
-AlphaCapv2.1.exe
-AlphaCapv2.1.zip
+*.zip
+*.exe
