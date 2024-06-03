@@ -3,3 +3,4 @@ venv/
 *.zip
 *.exe
 tSender.py
+.env
