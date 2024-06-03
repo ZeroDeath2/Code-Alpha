@@ -2,7 +2,4 @@
 venv/
 *.zip
 *.exe
-.env
-.gitignore
 tSender.py
-
