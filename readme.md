@@ -39,7 +39,7 @@ Install dependencies
 Start the application
 
 ```bash
-  python alphacapv2.1.py
+  python analyzer.py
 ```
 
 ## From releases
