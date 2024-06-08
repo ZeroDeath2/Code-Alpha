@@ -42,7 +42,7 @@ class networkScreenshotApp:
         merger.write(f"file_m_{now_str}.pdf")
         merger.close()
         print(f"Saved file_m_{now_str}.pdf")
-        for file in self.files:
+        for file in self.files[-2::-1]:
             os.remove(file)
         self.files = []
 
