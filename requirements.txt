@@ -1,3 +1,4 @@
 pygetwindow
 pyautogui
 pillow
+PyPDF2
