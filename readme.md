@@ -82,6 +82,7 @@ We welcome feedback and suggestions! Please open an issue on GitHub for any bugs
  - [Pyautogui](https://github.com/asweigart/pyautogui)
  - [Pygetwindow](https://github.com/asweigart/pygetwindow)
  - [Pillow](https://python-pillow.org/)
+ - [PyPDF2](https://github.com/talumbau/PyPDF2)
 
 
 ## Note
