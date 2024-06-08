@@ -21,7 +21,7 @@ class networkScreenshotApp:
         self.stop_button = tk.Button(root, text="Stop", command=self.stop)
         self.stop_button.grid(row=0, column=1, padx=10, pady=10)
 
-        self.version_label = tk.Label(root, text="Version 2.1")
+        self.version_label = tk.Label(root, text="Version 2.1.1a")
         self.version_label.grid(row=1, column=0, columnspan=2)
 
     def start_capture(self):
@@ -41,7 +41,7 @@ class networkScreenshotApp:
         now_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         merger.write(f"file_m_{now_str}.pdf")
         merger.close()
-        messagebox.showinfo("Success", "Files merged successfully")
+        print(f"Saved file_m_{now_str}.pdf")
         for file in self.files[-2::-1]:
             os.remove(file)
         self.files = []
@@ -64,6 +64,7 @@ class networkScreenshotApp:
             filename=f"file_{now_str}.pdf"
             self.files.append(filename)
             final_image.save(filename, "PDF")
+            print(f"Saved {filename}")
 
     def capture_screenshot(self):
         network_windows = [w for w in gw.getWindowsWithTitle("Whatsapp") if w.visible]
@@ -77,7 +78,6 @@ class networkScreenshotApp:
         window_height = network_window.height
 
         scroll_amount = window_height - 220
-        print(scroll_amount)
         total_height = 0
         images = []
         mouse_loc_to_scroll = (network_window.right - window_width // 10, start_y + 200)
@@ -88,7 +88,6 @@ class networkScreenshotApp:
                 if total_height < 64000:
                     screenshot = pyautogui.screenshot(region=(start_x, start_y, window_width, window_height))
                     images.append(screenshot)
-                    print(total_height)
                     total_height += screenshot.height
                     pyautogui.scroll(scroll_amount)
                     pyautogui.sleep(0.15)
@@ -100,6 +99,7 @@ class networkScreenshotApp:
             if images:  # Save remaining images if any
                 self.save_image(total_height, images, window_width)
         except Exception as e:
+            print(e)
             messagebox.showerror("Error", f"An error occurred: {e}")
             if images: 
                 self.save_image(total_height, images, window_width)
