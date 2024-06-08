@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
+from PyPDF2 import PdfMerger
 import pygetwindow as gw
 import pyautogui
 from PIL import Image
 import threading
 import datetime
+import os
 
 class networkScreenshotApp:
     def __init__(self, root):
@@ -26,22 +28,43 @@ class networkScreenshotApp:
         self.stop_flag = False
         self.capture_thread = threading.Thread(target=self.capture_screenshot)
         self.capture_thread.start()
+        self.files=[]
 
-    def stop(self):
-        self.stop_flag = True
-
-    def save_image(self, total_height, images, window_width):
-        final_image = Image.new('RGB', (window_width, total_height))
-
-        current_y = 0
-        images=images[::-1]
-        for img in images:
-            final_image.paste(img, (0, current_y))
-            current_y += img.height
+    def merge_files(self):
+        if not self.files:
+            messagebox.showerror("Error", "No files to merge")
+            return
+        merger = PdfMerger()
+        for file in self.files:
+            merger.append(file)
 
         now_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        final_image.save(f"network_screenshot_{now_str}.pdf", "PDF")
-        messagebox.showinfo(title=None, message=f"{now_str}.pdf")
+        merger.write(f"file_m_{now_str}.pdf")
+        merger.close()
+        messagebox.showinfo("Success", "Files merged successfully")
+        for file in self.files[-2::-1]:
+            os.remove(file)
+        self.files = []
+
+    def stop(self):
+            self.stop_flag = True
+            self.merge_files()
+
+    def save_image(self, total_height, images, window_width):
+        max_height = 65000
+        for i in range(0, len(images), max_height):
+            imgs = images[i:i+max_height]
+            final_height = sum(img.height for img in imgs)
+            final_image = Image.new('RGB', (window_width, final_height))
+            current_y = 0
+            now_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            for img in imgs:
+                final_image.paste(img, (0, current_y))
+                current_y += img.height
+            filename=f"file_{now_str}.pdf"
+            self.files.append(filename)
+            final_image.save(filename, "PDF")
+
     def capture_screenshot(self):
         network_windows = [w for w in gw.getWindowsWithTitle("Whatsapp") if w.visible]
         if not network_windows:
@@ -61,17 +84,25 @@ class networkScreenshotApp:
         pyautogui.moveTo(*mouse_loc_to_scroll)
 
         try:
-            while not self.stop_flag:
-                screenshot = pyautogui.screenshot(region=(start_x, start_y, window_width, window_height))
-                images.append(screenshot)
-                total_height += screenshot.height
-                pyautogui.scroll(scroll_amount)
-                pyautogui.sleep(0.2)
-
-            self.save_image(total_height, images, window_width)
+            while not self.stop_flag :
+                if total_height < 64000:
+                    screenshot = pyautogui.screenshot(region=(start_x, start_y, window_width, window_height))
+                    images.append(screenshot)
+                    print(total_height)
+                    total_height += screenshot.height
+                    pyautogui.scroll(scroll_amount)
+                    pyautogui.sleep(0.15)
+                else:    
+                    self.save_image(total_height, images, window_width)
+                    total_height = 0
+                    images = []
+                    self.capture_screenshot()
+            if images:  # Save remaining images if any
+                self.save_image(total_height, images, window_width)
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
-            self.save_image(total_height, images, window_width)
+            if images: 
+                self.save_image(total_height, images, window_width)
 
 if __name__ == "__main__":
     root = tk.Tk()
