@@ -35,14 +35,14 @@ class networkScreenshotApp:
             messagebox.showerror("Error", "No files to merge")
             return
         merger = PdfMerger()
-        for file in self.files:
+        for file in self.files[::-1]:
             merger.append(file)
 
         now_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         merger.write(f"file_m_{now_str}.pdf")
         merger.close()
         print(f"Saved file_m_{now_str}.pdf")
-        for file in self.files[-2::-1]:
+        for file in self.files:
             os.remove(file)
         self.files = []
 
@@ -54,6 +54,7 @@ class networkScreenshotApp:
         max_height = 65000
         for i in range(0, len(images), max_height):
             imgs = images[i:i+max_height]
+            imgs=imgs[::-1]
             final_height = sum(img.height for img in imgs)
             final_image = Image.new('RGB', (window_width, final_height))
             current_y = 0
